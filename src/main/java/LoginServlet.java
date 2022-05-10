@@ -31,9 +31,16 @@ public class LoginServlet extends HttpServlet {
         String user = getServletConfig().getInitParameter("user");
         String password = getServletConfig().getInitParameter("password");
 
-        Pattern pattern = Pattern.compile("^([A-Z][a-zA-Z]{2,}[ ]?)+$");
-        Matcher matcher = pattern.matcher(userInput);
-        if(!matcher.matches()) {
+        //Using the regex pattern and matcher method to check for userid of the user
+        Pattern userPattern = Pattern.compile("^([A-Z][a-zA-Z]{2,}[ ]?)+$");
+        Matcher userMatcher = userPattern.matcher(userInput);
+
+        //Using the regex pattern and matcher method to check for password of the user
+        Pattern pwdPattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*#?&]{1})[A-Za-z\\d@$!%*?&]{8,}$");
+        Matcher pwdMatcher = pwdPattern.matcher(pwdInput);
+
+        // If the matcher does not matches then we will return it
+        if(!userMatcher.matches()) {
             PrintWriter out = response.getWriter();
             out.println("<font color = red> Incorrect UserId. Please try again!!<font>");
             RequestDispatcher rd = getServletContext().getRequestDispatcher("/login.html");
@@ -41,6 +48,16 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
+        // If the matcher does not matches then we will return it
+        if(!pwdMatcher.matches()) {
+            PrintWriter out = response.getWriter();
+            out.println("<font color = blue> Incorrect Password. Please try again!!<font>");
+            RequestDispatcher rd = getServletContext().getRequestDispatcher("/login.html");
+            rd.include(request, response);
+            return;
+        }
+
+        //
         if (user.equals(userInput) && password.equals(pwdInput)) {
             request.setAttribute("user", user);
             request.getRequestDispatcher("/LoginSuccess.jsp").forward(request, response);
